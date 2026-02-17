@@ -46,16 +46,10 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.pre("save", function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
-  bcrypt
-    .hash(this.password, 10)
-    .then((hashedPassword) => {
-      this.password = hashedPassword;
-      next();
-    })
-    .catch((error) => next(error));
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 // custom methods
